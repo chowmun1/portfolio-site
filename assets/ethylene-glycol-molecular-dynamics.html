@@ -28,11 +28,11 @@
     font-family:'Space Grotesk', sans-serif;
     overflow:hidden;
   }
-  #stage{ position:fixed; inset:0; cursor:grab; touch-action:none; }
+  #stage{ position:absolute; inset:0; cursor:grab; touch-action:none; }
   #stage.dragging{ cursor:grabbing; }
   canvas{ display:block; }
 
-  .overlay{ position:fixed; pointer-events:none; }
+  .overlay{ position:absolute; pointer-events:none; }
   .overlay a, .overlay button{ pointer-events:auto; }
 
   #title-block{
