@@ -608,7 +608,7 @@ section {
   color: var(--color-text-muted);
 }
 
-.skills-list-live {
+.skills-list-status {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -616,7 +616,7 @@ section {
   border-color: var(--color-accent-end);
 }
 
-.homelab-live-dot {
+.homelab-status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
