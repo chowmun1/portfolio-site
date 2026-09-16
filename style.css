@@ -649,12 +649,6 @@ section {
   margin: 0;
 }
 
-.homelab-status-btn {
-  opacity: 0.6;
-  cursor: default;
-  pointer-events: none;
-  white-space: nowrap;
-}
 
 @media (min-width: 800px) {
   .homelab-grid {
