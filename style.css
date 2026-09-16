@@ -608,6 +608,23 @@ section {
   color: var(--color-text-muted);
 }
 
+.skills-list-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text);
+  border-color: var(--color-accent-end);
+}
+
+.homelab-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent-end);
+  box-shadow: 0 0 8px 1px var(--color-accent-end);
+  flex-shrink: 0;
+}
+
 .homelab-status {
   display: flex;
   flex-wrap: wrap;
