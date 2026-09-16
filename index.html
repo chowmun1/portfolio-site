@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Charlie Howman</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="#hero" class="nav-logo">Charlie Howman</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#homelab">Homelab</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <section id="hero" class="hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <span class="pill">CHARLIE HOWMAN</span>
+          <h1>Software Engineer.</h1>
+          <p class="tagline">Computational chemist turned software engineer, from predicting atomic forces with neural networks to shipping production RAG pipelines at PwC.</p>
+          <a href="#projects" class="btn">EXPLORE MY WORK</a>
+        </div>
+        <div class="hero-photo">
+          <img src="assets/profile.jpg" alt="Charlie Howman">
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="about">
+      <div class="about-inner">
+        <div class="about-text">
+          <h2>MY<br>BACKGROUND</h2>
+
+          <div class="about-block">
+            <h3>Experience</h3>
+            <div class="entry entry--logo">
+              <img class="entry-logo" src="assets/pwcuk.jpg" alt="PwC UK">
+              <div class="entry-content">
+                <div class="entry-header">
+                  <h4>Software Engineer, Technical Delivery @ PwC UK</h4>
+                  <span class="entry-date">Sep 2023 – Present</span>
+                </div>
+                <p>Progressed from PwC's Technology Graduate Programme into a Software Engineering role within the Technical Delivery team, building full-stack applications spanning frontend, backend, database design, and AI-driven workflows. Led development of TestGenPro, PwC's generative AI test automation tool, architecting a Node.js/SQL Server backend behind a Next.js frontend. Currently building a Risk Platform comprising four modules for managing risk and control matrices, working across API design, database architecture, and UI to deliver an end-to-end user experience. Designed and shipped production RAG pipelines (chunking, embedding, and retrieval via Azure AI Search) powering a live chatbot for PwC's Risk division, and integrated LLMs into client-facing ESG and supply chain prototypes.</p>
+              </div>
+            </div>
+            <div class="entry entry--logo">
+              <img class="entry-logo" src="assets/miblogo.png" alt="Manchester Institute of Biotechnology">
+              <div class="entry-content">
+                <div class="entry-header">
+                  <h4>Research Placement — Manchester Institute of Biotechnology</h4>
+                  <span class="entry-date">Jul 2022 – Sep 2022</span>
+                </div>
+                <p>Built and optimised batch simulation workflows in Python for molecular systems, applying computational models to study biodegradation of environmental toxins.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-block">
+            <h3>Skills</h3>
+
+            <div class="skills-group">
+              <h4 class="skills-group-label">Languages & AI/ML</h4>
+              <ul class="skills-list">
+                <li>Python</li>
+                <li>LangChain / LangGraph</li>
+                <li>RAG Pipelines & Agents</li>
+                <li>Azure AI Search</li>
+              </ul>
+            </div>
+
+            <div class="skills-group">
+              <h4 class="skills-group-label">Frameworks & Data</h4>
+              <ul class="skills-list">
+                <li>SQL</li>
+                <li>Next.js / Node.js</li>
+                <li>React</li>
+                <li>Databricks / PySpark</li>
+              </ul>
+            </div>
+
+            <div class="skills-group">
+              <h4 class="skills-group-label">Cloud & Infra</h4>
+              <ul class="skills-list">
+                <li>Docker & CI/CD</li>
+                <li>Azure</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="about-block">
+            <h3>Education</h3>
+            <div class="entry">
+              <div class="entry-header">
+                <h4>MChem, Master of Chemistry — University of Manchester</h4>
+                <span class="entry-date">2018 – 2023</span>
+              </div>
+              <p>First Class Honours. Focus on computational chemistry and artificial neural networks. Final year project developed an ANN using TensorFlow to predict atomic forces in sugar molecule systems, optimising simulation accuracy.</p>
+            </div>
+
+            <div class="edu-demo">
+              <iframe
+                class="edu-demo-frame"
+                src="assets/ethylene-glycol-molecular-dynamics.html"
+                title="Interactive ethylene glycol conformational dynamics simulation"
+                loading="lazy">
+              </iframe>
+              <p class="edu-demo-caption">Interactive: ethylene glycol conformational dynamics — drag to rotate, scroll to zoom.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="projects">
+      <div class="projects-inner">
+        <h2>WHAT I'VE <br class="mobile-break">WORKED ON</h2>
+        <p class="section-subtext">Some of the things I've built while learning, experimenting, and bringing ideas to life.</p>
+
+        <div class="project-grid">
+
+          <article class="project-card">
+            <div class="project-media" aria-hidden="true"></div>
+            <div class="project-body">
+              <h3>TestGenPro</h3>
+              <p>PwC's generative AI test automation tool — transforms user stories into structured test cases and steps, with a Node.js/SQL Server backend behind a Next.js frontend.</p>
+              <div class="tag-list">
+                <span class="tag">Node.js</span>
+                <span class="tag">Next.js</span>
+                <span class="tag">SQL Server</span>
+                <span class="tag">LLMs</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-media" aria-hidden="true"></div>
+            <div class="project-body">
+              <h3>RAG Chatbot for PwC Risk</h3>
+              <p>End-to-end pipeline chunking, cleaning, and embedding large document corpora into Azure AI Search, powering natural language Q&A over structured and unstructured data for a production chatbot.</p>
+              <div class="tag-list">
+                <span class="tag">Python</span>
+                <span class="tag">Azure AI Search</span>
+                <span class="tag">RAG</span>
+                <span class="tag">Streamlit</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-media">
+              <img src="assets/neuralnet.jpg" alt="Neural network visualization of atomic force predictions">
+            </div>
+            <div class="project-body">
+              <h3>ANN Force Prediction for Sugar Molecules</h3>
+              <p>Final year MChem project — built an artificial neural network with TensorFlow to predict atomic forces in sugar molecule systems, improving molecular simulation accuracy.</p>
+              <div class="tag-list">
+                <span class="tag">TensorFlow</span>
+                <span class="tag">Python</span>
+                <span class="tag">Computational Chemistry</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-media project-media--placeholder" aria-hidden="true"></div>
+            <div class="project-body">
+              <h3>Coming Soon</h3>
+              <p>Stay tuned for exciting new projects currently in the works!</p>
+              <div class="tag-list">
+                <span class="tag">TBC</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="homelab" class="homelab">
+      <div class="homelab-inner">
+        <h2>MY<br class="mobile-break"> HOMELAB</h2>
+        <p class="section-subtext">A small self hosted server I run at home so I have a hands-on way to learn networking, containers, and infrastructure outside of work.</p>
+
+        <div class="homelab-grid">
+          <div class="homelab-diagram" role="img" aria-label="Network diagram: home router connects to a network switch, which connects to a Dell OptiPlex 7020 server running Docker containers for Uptime Kuma, Pi-hole, and Portainer">
+            <div class="diagram-node diagram-node--router">Home Router</div>
+            <div class="diagram-line"></div>
+            <div class="diagram-node diagram-node--switch">Network Switch</div>
+            <div class="diagram-line"></div>
+            <div class="diagram-node diagram-node--server">
+              Dell OptiPlex 7020
+              <span class="diagram-node-sub">16GB RAM · Docker</span>
+            </div>
+            <div class="diagram-line diagram-line--branch"></div>
+            <div class="diagram-containers">
+              <span class="diagram-container">Uptime Kuma</span>
+              <span class="diagram-container">Pi-hole</span>
+              <span class="diagram-container">Portainer</span>
+            </div>
+          </div>
+
+          <div class="homelab-text">
+            <div class="about-block">
+              <h3>The Build</h3>
+              <p>An old Dell OptiPlex 7020 (16GB RAM) repurposed into a home server, connected via a dedicated network switch off my home router. Everything runs as Docker containers, managed through Portainer, so services are easy to add, update, and tear down without touching the host directly.</p>
+            </div>
+
+            <div class="about-block">
+              <h3>Running Now</h3>
+              <ul class="skills-list">
+                <li>Uptime Kuma — uptime monitoring</li>
+                <li>Pi-hole — network-wide ad/tracker blocking</li>
+                <li>Portainer — container management</li>
+                <li>Docker</li>
+              </ul>
+            </div>
+
+            <div class="homelab-status">
+              <div class="homelab-status-text">
+                <h3>Live Status</h3>
+                <p>Real-time uptime monitoring for the services above, via a public Uptime Kuma status page.</p>
+              </div>
+              <a class="btn btn-small homelab-status-btn" aria-disabled="true" tabindex="-1" title="Status page — link coming soon">🔧 Going public soon</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="contact" class="site-footer">
+    <div class="contact-inner">
+      <div class="contact-text">
+        <h2>LET'S<br>CONNECT</h2>
+        <p class="section-subtext">Feel free to reach out about work, projects, or anything in between.</p>
+
+        <div class="social-links">
+          <a href="https://github.com/chowmun1" class="icon-btn" aria-label="GitHub" aria-disabled="true" tabindex="-1" title="GitHub">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/charlie-howman-79b542182/" class="icon-btn" aria-label="LinkedIn" aria-disabled="true" tabindex="-1" title="LinkedIn">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="mailto:charliehowman1@gmail.com" class="icon-btn" aria-label="Email">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </a>
+        </div>
+
+        <a href="mailto:charliehowman1@gmail.com" class="btn">CONTACT ME</a>
+      </div>
+    </div>
+    <p class="footer-note">&copy; 2026 Charlie Howman</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

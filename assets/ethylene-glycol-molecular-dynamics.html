@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethylene glycol — conformational dynamics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#05070c;
+    --bg-1:#0b101c;
+    --ink-0:#e7ecf3;
+    --ink-1:#8b93a5;
+    --ink-2:#586178;
+    --amber:#ffb454;
+    --teal:#4fd1c5;
+    --coral:#e2493d;
+    --line:rgba(255,255,255,0.08);
+    --panel:rgba(10,14,22,0.62);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    background: radial-gradient(120% 120% at 22% 18%, var(--bg-1) 0%, var(--bg-0) 62%);
+    color:var(--ink-0);
+    font-family:'Space Grotesk', sans-serif;
+    overflow:hidden;
+  }
+  #stage{ position:fixed; inset:0; cursor:grab; }
+  #stage.dragging{ cursor:grabbing; }
+  canvas{ display:block; }
+
+  .overlay{ position:fixed; pointer-events:none; }
+  .overlay a, .overlay button{ pointer-events:auto; }
+
+  #title-block{
+    top:28px; left:32px; max-width:340px;
+  }
+  #title-block h1{
+    margin:0 0 6px 0;
+    font-size:clamp(20px,3vw,26px);
+    font-weight:600;
+    letter-spacing:0.01em;
+    color:var(--ink-0);
+  }
+  #title-block p{
+    margin:0;
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--ink-1);
+    font-weight:400;
+  }
+  #title-block .formula{
+    color:var(--teal);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    margin-top:10px;
+    display:inline-block;
+  }
+
+  #hud{
+    bottom:28px; left:32px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 18px;
+    backdrop-filter: blur(10px);
+    width:236px;
+  }
+  #hud .row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:8px;
+  }
+  #hud .label{
+    font-size:12px; color:var(--ink-1); font-weight:400;
+  }
+  #hud .value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px; color:var(--ink-0);
+    font-variant-numeric: tabular-nums;
+  }
+  #hud .value.state{
+    color:var(--amber);
+    font-size:13px;
+  }
+  #hud .divider{ height:1px; background:var(--line); margin:12px 0 10px 0; }
+  #hud svg{ display:block; margin-top:2px; }
+  #hud .curve-label{
+    font-size:11px; color:var(--ink-2); margin-top:4px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  #legend{
+    bottom:28px; right:32px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    backdrop-filter: blur(10px);
+    font-size:12.5px;
+    color:var(--ink-1);
+  }
+  #legend .item{ display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  #legend .item:last-child{ margin-bottom:0; }
+  #legend .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+  #hint{
+    top:28px; right:32px;
+    font-size:12px; color:var(--ink-2);
+    font-family:'IBM Plex Mono', monospace;
+    text-align:right;
+    line-height:1.6;
+  }
+
+  #caption{
+    bottom:28px; left:50%; transform:translateX(-50%);
+    font-size:11px; color:var(--ink-2);
+    max-width:420px; text-align:center; line-height:1.5;
+    display:none;
+  }
+
+  @media (max-width: 640px){
+    #legend{ display:none; }
+    #hud{ width:200px; padding:13px 15px; }
+    #title-block{ max-width:220px; }
+    #title-block p{ display:none; }
+    #hint{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage"></div>
+
+<div class="overlay" id="title-block">
+  <h1>Ethylene glycol</h1>
+  <p>Rotation about the central C-C bond interconverts gauche and anti conformers. The gauche form is favoured at equilibrium, stabilised by an intramolecular O-H&hellip;O interaction.</p>
+  <span class="formula">C&#8322;H&#8326;O&#8322; &middot; HOCH&#8322;CH&#8322;OH</span>
+</div>
+
+<div class="overlay" id="hint">Drag to rotate.<br>Scroll to zoom.</div>
+
+<div class="overlay" id="hud">
+  <div class="row">
+    <span class="label">Dihedral O-C-C-O</span>
+    <span class="value" id="dihedral-value">0.0&deg;</span>
+  </div>
+  <div class="row">
+    <span class="label">Conformer</span>
+    <span class="value state" id="conformer-value">&mdash;</span>
+  </div>
+  <div class="divider"></div>
+  <svg id="energy-svg" width="204" height="52" viewBox="0 0 204 52"></svg>
+  <div class="curve-label">Torsional potential, schematic</div>
+</div>
+
+<div class="overlay" id="legend">
+  <div class="item"><span class="dot" style="background:#8f97a8;"></span>Carbon</div>
+  <div class="item"><span class="dot" style="background:#e2493d;"></span>Oxygen</div>
+  <div class="item"><span class="dot" style="background:#e8edf2;"></span>Hydrogen</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Geometry data ----------
+  // Built from idealised tetrahedral bond angles and standard bond lengths
+  // (C-C 1.54A, C-O 1.43A, C-H 1.09A, O-H 0.96A). Illustrative, not ab initio.
+  var FIXED = {
+    C1:  [-0.7700,  0.0000,  0.0000],
+    C2:  [ 0.7700,  0.0000,  0.0000],
+    O1:  [-1.2467, -0.9533, -0.9533],
+    H1a: [-1.1333,  0.9926, -0.2660],
+    H1b: [-1.1333, -0.2660,  0.9926],
+    HO1: [-0.6543, -0.9743, -1.7085]
+  };
+  // Reference (theta = 0) positions for the -CH2OH fragment on C2.
+  // These rotate rigidly about the C1-C2 axis, pivoted at C2.
+  var C2BASE = {
+    O2:  [ 1.2467,  0.9533,  0.9533],
+    H2a: [ 1.1333,  0.2660, -0.9926],
+    H2b: [ 1.1333, -0.9926,  0.2660],
+    HO2: [ 0.6543,  0.9743,  1.7085]
+  };
+  var PIVOT = [0.7700, 0, 0];
+  var BONDS = [
+    ["C1","C2"],["C1","O1"],["C1","H1a"],["C1","H1b"],
+    ["C2","O2"],["C2","H2a"],["C2","H2b"],
+    ["O1","HO1"],["O2","HO2"]
+  ];
+  var ELEMENT = {
+    C1:"C", C2:"C", O1:"O", O2:"O",
+    H1a:"H", H1b:"H", H2a:"H", H2b:"H", HO1:"H", HO2:"H"
+  };
+  var STYLE = {
+    C: { radius:0.30, color:0x8f97a8, emissive:0x12161d },
+    O: { radius:0.32, color:0xe2493d, emissive:0x3a0f0c },
+    H: { radius:0.17, color:0xe8edf2, emissive:0x14161a }
+  };
+
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- Renderer / scene ----------
+  var stage = document.getElementById('stage');
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(42, window.innerWidth/window.innerHeight, 0.1, 100);
+  var renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  stage.appendChild(renderer.domElement);
+
+  var ambient = new THREE.AmbientLight(0x33415c, 0.65);
+  scene.add(ambient);
+  var keyLight = new THREE.PointLight(0xffb454, 1.1, 30);
+  keyLight.position.set(4, 3, 5);
+  scene.add(keyLight);
+  var rimLight = new THREE.PointLight(0x4fd1c5, 0.85, 30);
+  rimLight.position.set(-5, -2, -4);
+  scene.add(rimLight);
+  var fillLight = new THREE.PointLight(0xffffff, 0.25, 30);
+  fillLight.position.set(0, 5, 2);
+  scene.add(fillLight);
+
+  // ---------- Build atoms ----------
+  var atomGroups = {}; // name -> THREE.Group (position updated each frame)
+  var jitter = {}; // name -> {dir: Vector3, freq, phase}
+
+  function makeAtom(name, basePos){
+    var el = ELEMENT[name];
+    var s = STYLE[el];
+    var group = new THREE.Group();
+
+    var coreGeo = new THREE.SphereGeometry(s.radius, 24, 18);
+    var coreMat = new THREE.MeshStandardMaterial({
+      color: s.color, emissive: s.emissive, roughness:0.38, metalness:0.12
+    });
+    var core = new THREE.Mesh(coreGeo, coreMat);
+    group.add(core);
+
+    var haloGeo = new THREE.SphereGeometry(s.radius*1.9, 16, 12);
+    var haloMat = new THREE.MeshBasicMaterial({
+      color: s.color, transparent:true, opacity:0.10,
+      blending: THREE.AdditiveBlending, depthWrite:false
+    });
+    var halo = new THREE.Mesh(haloGeo, haloMat);
+    group.add(halo);
+
+    group.position.set(basePos[0], basePos[1], basePos[2]);
+    scene.add(group);
+    atomGroups[name] = group;
+
+    var d = new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
+    jitter[name] = { dir:d, freq: 2.2 + Math.random()*1.6, phase: Math.random()*Math.PI*2 };
+  }
+
+  Object.keys(FIXED).forEach(function(name){ makeAtom(name, FIXED[name]); });
+  Object.keys(C2BASE).forEach(function(name){ makeAtom(name, C2BASE[name]); });
+
+  // ---------- Build bonds ----------
+  var bondMeshes = {};
+  var bondMat = new THREE.MeshStandardMaterial({
+    color:0x4fd1c5, emissive:0x123330, roughness:0.4, metalness:0.1
+  });
+  var unitCyl = new THREE.CylinderGeometry(0.052, 0.052, 1, 10, 1, true);
+
+  BONDS.forEach(function(pair){
+    var mesh = new THREE.Mesh(unitCyl, bondMat);
+    scene.add(mesh);
+    bondMeshes[pair[0]+"-"+pair[1]] = mesh;
+  });
+
+  var UP = new THREE.Vector3(0,1,0);
+  function updateBond(nameA, nameB){
+    var a = atomGroups[nameA].position, b = atomGroups[nameB].position;
+    var mesh = bondMeshes[nameA+"-"+nameB];
+    var dir = new THREE.Vector3().subVectors(b,a);
+    var len = dir.length();
+    var mid = new THREE.Vector3().addVectors(a,b).multiplyScalar(0.5);
+    mesh.position.copy(mid);
+    mesh.scale.set(1, len, 1);
+    mesh.quaternion.setFromUnitVectors(UP, dir.clone().normalize());
+  }
+
+  // ---------- Camera orbit controls (manual) ----------
+  var radius = 6.4, azimuth = 0.65, elevation = 0.38;
+  var minRadius = 3.2, maxRadius = 12;
+  var dragging = false, lastX=0, lastY=0;
+  var idleSpin = reduceMotion ? 0 : 0.055;
+
+  function updateCamera(){
+    var ce = Math.cos(elevation), se = Math.sin(elevation);
+    var ca = Math.cos(azimuth), sa = Math.sin(azimuth);
+    camera.position.set(radius*ce*sa, radius*se, radius*ce*ca);
+    camera.lookAt(0,0,0);
+  }
+  updateCamera();
+
+  stage.addEventListener('pointerdown', function(e){
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    stage.classList.add('dragging');
+  });
+  window.addEventListener('pointerup', function(){ dragging=false; stage.classList.remove('dragging'); });
+  window.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    var dx = e.clientX-lastX, dy = e.clientY-lastY;
+    lastX=e.clientX; lastY=e.clientY;
+    azimuth -= dx*0.0055;
+    elevation = Math.max(-1.3, Math.min(1.3, elevation + dy*0.0045));
+  });
+  stage.addEventListener('wheel', function(e){
+    e.preventDefault();
+    radius = Math.max(minRadius, Math.min(maxRadius, radius + e.deltaY*0.012));
+  }, { passive:false });
+
+  window.addEventListener('resize', function(){
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // ---------- Torsion dynamics ----------
+  // Simplified 3-fold torsional potential: slower through staggered minima
+  // (gauche+/anti/gauche-), faster across eclipsed barriers.
+  var thetaDeg = 40;
+  var baseSpeed = reduceMotion ? 6 : 26; // deg/sec baseline
+
+  function speedFactor(thetaRad){
+    return 1 + 0.62*Math.cos(3*thetaRad);
+  }
+  function energyNorm(thetaRad){
+    // 0..1, 1 = highest (eclipsed), 0 = lowest (staggered)
+    return (1 + Math.cos(3*thetaRad)) / 2;
+  }
+  function conformerLabel(deg){
+    var m = ((deg % 120) + 120) % 120;
+    var distToEclipse = Math.min(m, 120-m);
+    if (distToEclipse < 12) return "eclipsing";
+    var near = ((deg % 360)+360)%360;
+    if (near > 300 || near <= 60) {
+      return (near <= 60) ? "gauche (+)" : "gauche (−)";
+    }
+    if (near > 60 && near <= 180) return near < 130 ? "gauche (+)" : "anti";
+    return near < 240 ? "anti" : "gauche (−)";
+  }
+
+  // ---------- Energy curve SVG ----------
+  var svg = document.getElementById('energy-svg');
+  var W=204, H=52, M=6;
+  (function drawCurve(){
+    var pts=[];
+    for(var d=0; d<=360; d+=6){
+      var r = d*Math.PI/180;
+      var e = energyNorm(r);
+      var x = M + (d/360)*(W-2*M);
+      var y = M + (1-e)*(H-2*M);
+      pts.push(x.toFixed(1)+","+y.toFixed(1));
+    }
+    var path = document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    path.setAttribute("points", pts.join(" "));
+    path.setAttribute("fill","none");
+    path.setAttribute("stroke","#586178");
+    path.setAttribute("stroke-width","1.4");
+    svg.appendChild(path);
+
+    var marker = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    marker.setAttribute("r","4");
+    marker.setAttribute("fill","#ffb454");
+    marker.id = "energy-marker";
+    svg.appendChild(marker);
+  })();
+  var markerEl = document.getElementById('energy-marker');
+
+  function updateEnergyMarker(deg){
+    var d = ((deg%360)+360)%360;
+    var r = d*Math.PI/180;
+    var e = energyNorm(r);
+    var x = M + (d/360)*(W-2*M);
+    var y = M + (1-e)*(H-2*M);
+    markerEl.setAttribute("cx", x.toFixed(1));
+    markerEl.setAttribute("cy", y.toFixed(1));
+  }
+
+  var dihedralEl = document.getElementById('dihedral-value');
+  var conformerEl = document.getElementById('conformer-value');
+
+  // ---------- Animation loop ----------
+  var pivot = new THREE.Vector3(PIVOT[0], PIVOT[1], PIVOT[2]);
+  var tmp = new THREE.Vector3();
+  var last = performance.now();
+
+  function rotateAboutX(base, pivotV, thetaRad, out){
+    var dx = base[0]-pivotV.x, dy = base[1]-pivotV.y, dz = base[2]-pivotV.z;
+    var c = Math.cos(thetaRad), s = Math.sin(thetaRad);
+    var y2 = dy*c - dz*s, z2 = dy*s + dz*c;
+    out.set(pivotV.x+dx, pivotV.y+y2, pivotV.z+z2);
+  }
+
+  function tick(now){
+    var dt = Math.min(0.05, (now-last)/1000);
+    last = now;
+
+    var thetaRad0 = thetaDeg*Math.PI/180;
+    thetaDeg += baseSpeed*speedFactor(thetaRad0)*dt;
+    var thetaRad = thetaDeg*Math.PI/180;
+
+    // rotating fragment
+    Object.keys(C2BASE).forEach(function(name){
+      rotateAboutX(C2BASE[name], pivot, thetaRad, tmp);
+      var j = jitter[name];
+      var s = reduceMotion ? 0 : Math.sin(now*0.001*j.freq + j.phase)*0.035;
+      atomGroups[name].position.set(
+        tmp.x + j.dir.x*s, tmp.y + j.dir.y*s, tmp.z + j.dir.z*s
+      );
+    });
+    // fixed fragment (vibration only)
+    Object.keys(FIXED).forEach(function(name){
+      var b = FIXED[name], j = jitter[name];
+      var s = reduceMotion ? 0 : Math.sin(now*0.001*j.freq + j.phase)*0.035;
+      atomGroups[name].position.set(
+        b[0]+j.dir.x*s, b[1]+j.dir.y*s, b[2]+j.dir.z*s
+      );
+    });
+
+    BONDS.forEach(function(p){ updateBond(p[0], p[1]); });
+
+    if(!dragging) azimuth += idleSpin*dt;
+    updateCamera();
+
+    var disp = ((thetaDeg%360)+360)%360;
+    dihedralEl.textContent = disp.toFixed(1) + "°";
+    conformerEl.textContent = conformerLabel(disp);
+    updateEnergyMarker(disp);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+})();
+</script>
+</body>
+</html>
