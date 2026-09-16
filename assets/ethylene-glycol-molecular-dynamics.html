@@ -28,7 +28,7 @@
     font-family:'Space Grotesk', sans-serif;
     overflow:hidden;
   }
-  #stage{ position:fixed; inset:0; cursor:grab; }
+  #stage{ position:fixed; inset:0; cursor:grab; touch-action:none; }
   #stage.dragging{ cursor:grabbing; }
   canvas{ display:block; }
 
@@ -286,10 +286,16 @@
   }
 
   // ---------- Camera orbit controls (manual) ----------
-  var radius = 6.4, azimuth = 0.65, elevation = 0.38;
+  var baseRadius = 6.4, azimuth = 0.65, elevation = 0.38;
   var minRadius = 3.2, maxRadius = 12;
   var dragging = false, lastX=0, lastY=0;
   var idleSpin = reduceMotion ? 0 : 0.055;
+
+  function aspectRadius(){
+    var aspect = window.innerWidth/window.innerHeight;
+    return aspect < 1 ? baseRadius / aspect : baseRadius;
+  }
+  var radius = Math.min(maxRadius, aspectRadius());
 
   function updateCamera(){
     var ce = Math.cos(elevation), se = Math.sin(elevation);
@@ -320,6 +326,7 @@
     camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    radius = Math.min(maxRadius, aspectRadius());
   });
 
   // ---------- Torsion dynamics ----------
